@@ -2,7 +2,7 @@
 Chat agent streaming response handler using Claude (Anthropic).
 
 Streams responses via NDJSON events, handles tool calling with parallel
-execution, image attachments, and food detection via Cal AI.
+execution, and image attachments.
 """
 
 from typing import List, Dict, AsyncGenerator, Optional, Any
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 TOOL_EXECUTION_TIMEOUT_S = 30
 MAX_TOOL_RESULT_CHARS = 4000
 MAX_CONTEXT_CHARS = 100000
-CLAUDE_MAX_RETRIES = 2
+CLAUDE_MAX_RETRIES = 3
 CLAUDE_RETRY_DELAY_S = 1.0
 
 # Transient HTTP status codes worth retrying
@@ -216,7 +216,7 @@ async def get_user_connections(user_id: str, user_jwt: str) -> List[str]:
         result = await supabase.table("ext_connections") \
             .select("provider") \
             .eq("user_id", user_id) \
-            .eq("status", "active") \
+            .eq("is_active", True) \
             .execute()
         providers = list({row["provider"] for row in (result.data or [])})
         if providers:
@@ -283,9 +283,9 @@ async def stream_chat_response(
     image_blocks: List[Dict[str, Any]] = []
 
     if attachments and recent_messages:
-        image_blocks, base64_images = await _prepare_image_attachments(attachments)
+        image_blocks, _ = await _prepare_image_attachments(attachments)
 
-        if base64_images:
+        if image_blocks:
             yield status_event("Processing images...")
 
     # Build the last user message with images
@@ -396,9 +396,19 @@ async def stream_chat_response(
 
             except APIStatusError as e:
                 last_error = e
-                if e.status_code in _TRANSIENT_STATUS_CODES and attempt < CLAUDE_MAX_RETRIES:
+                is_transient = e.status_code in _TRANSIENT_STATUS_CODES
+                # Catch mid-stream overload errors (SSE error on 200 response)
+                if not is_transient:
+                    try:
+                        body = e.body if hasattr(e, 'body') else {}
+                        if isinstance(body, dict):
+                            error_type = body.get('error', {}).get('type', '')
+                            is_transient = error_type in ('overloaded_error', 'api_error')
+                    except Exception:
+                        pass
+                if is_transient and attempt < CLAUDE_MAX_RETRIES:
                     delay = CLAUDE_RETRY_DELAY_S * attempt
-                    logger.warning(f"[CHAT] Claude API returned {e.status_code}, retrying in {delay}s (attempt {attempt}/{CLAUDE_MAX_RETRIES})")
+                    logger.warning(f"[CHAT] Claude API error (status={e.status_code}, body={e.body}), retrying in {delay}s (attempt {attempt}/{CLAUDE_MAX_RETRIES})")
                     await asyncio.sleep(delay)
                     # Reset state for retry
                     collected_text = ""

@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion } from 'motion/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { PencilEdit01Icon } from '@hugeicons-pro/core-stroke-standard';
+import { PencilEdit01Icon, Video01Icon } from '@hugeicons-pro/core-stroke-standard';
 import { updateCalendarEvent } from '../../../api/client';
 import TimePickerInput from './TimePickerInput';
 import type { CalendarEvent } from '../../../api/client';
@@ -27,6 +27,35 @@ const parseToLocal = (isoString: string) => {
     date: `${year}-${month}-${day}`,
     time: `${hours}:${minutes}`
   };
+};
+
+// Validate a meeting link URL and return it only if it uses a safe scheme.
+// Returns the sanitized absolute URL string if safe, otherwise null.
+const getSafeMeetingLink = (rawLink: string): string | null => {
+  const trimmed = rawLink.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  try {
+    const url = new URL(trimmed, window.location.origin);
+    // Only allow http and https — this rejects javascript:, data:, vbscript:, etc.
+    if (url.protocol === 'http:' || url.protocol === 'https:') {
+      return url.href;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+};
+
+// Check if a validated URL points to Google Meet by hostname.
+const isGoogleMeetUrl = (safeUrl: string): boolean => {
+  try {
+    return new URL(safeUrl).hostname === 'meet.google.com';
+  } catch {
+    return false;
+  }
 };
 
 export default function EditEventModal({
@@ -172,35 +201,46 @@ export default function EditEventModal({
             <div className="space-y-4">
               <div>
                 <label className="block text-xs text-text-secondary mb-1.5">Meeting Link</label>
-                {meetingLink.trim() && !isEditingLink ? (
-                  <div className="flex items-center gap-2 px-3 py-2.5 bg-white border border-border-gray rounded-lg">
-                    <a
-                      href={meetingLink.trim()}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 text-xs text-blue-600 hover:text-blue-700 truncate"
-                    >
-                      {meetingLink.trim()}
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => setIsEditingLink(true)}
-                      className="shrink-0 text-text-tertiary hover:text-text-secondary transition-colors"
-                    >
-                      <HugeiconsIcon icon={PencilEdit01Icon} size={14} strokeWidth={2} />
-                    </button>
-                  </div>
-                ) : (
-                  <input
-                    type="url"
-                    value={meetingLink}
-                    onChange={(e) => setMeetingLink(e.target.value)}
-                    onBlur={() => { if (meetingLink.trim()) setIsEditingLink(false); }}
-                    className={inputStyles}
-                    placeholder="Add link"
-                    autoFocus={isEditingLink && !!event.meeting_link}
-                  />
-                )}
+                {(() => {
+                  const safeMeetingLink = getSafeMeetingLink(meetingLink);
+                  if (safeMeetingLink && isGoogleMeetUrl(safeMeetingLink)) {
+                    return (
+                      <a
+                        href={safeMeetingLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-3 py-2.5 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-600 font-medium hover:bg-blue-100 transition-colors"
+                      >
+                        <HugeiconsIcon icon={Video01Icon} size={14} className="text-blue-600 shrink-0" />
+                        Join with Google Meet
+                      </a>
+                    );
+                  }
+                  if (safeMeetingLink && !isEditingLink) {
+                    return (
+                      <a
+                        href={safeMeetingLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-3 py-2.5 bg-neutral-50 border border-border-subtle rounded-lg text-xs text-text-secondary hover:bg-neutral-100 transition-colors"
+                      >
+                        <HugeiconsIcon icon={PencilEdit01Icon} size={14} className="text-text-secondary shrink-0" />
+                        <span className="truncate">{meetingLink.trim()}</span>
+                      </a>
+                    );
+                  }
+                  return (
+                    <input
+                      type="url"
+                      value={meetingLink}
+                      onChange={(e) => setMeetingLink(e.target.value)}
+                      onBlur={() => { if (meetingLink.trim()) setIsEditingLink(false); }}
+                      className={inputStyles}
+                      placeholder="Add link"
+                      autoFocus={isEditingLink && !!event.meeting_link}
+                    />
+                  );
+                })()}
               </div>
 
               <div>

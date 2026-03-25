@@ -1,0 +1,30 @@
+# Gitleaks configuration for Core OSS
+# https://github.com/gitleaks/gitleaks
+
+title = "Core OSS Secret Scanner"
+
+# Global allowlist — test fixtures and documentation
+[allowlist]
+description = "Allow placeholder values in tests and docs"
+regexTarget = "match"
+regexes = [
+  '''eyJhbGciOiAiSFMyNTYi''',
+  '''eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlc3Qi''',
+  '''test-jwt-token''',
+  '''placeholder-sig''',
+  '''placeholder''',
+]
+paths = [
+  '''\.env\.example$''',
+  '''README\.md$''',
+  '''CONTRIBUTING\.md$''',
+]
+
+# Custom rule: catch hardcoded Supabase project URLs (real project refs are 20 lowercase chars)
+[[rules]]
+id = "hardcoded-supabase-url"
+description = "Hardcoded Supabase project URL (not placeholder)"
+regex = '''https://[a-z]{20}\.supabase\.co'''
+tags = ["supabase"]
+[rules.allowlist]
+regexes = ['''placeholder\.supabase\.co''']

@@ -1,5 +1,4 @@
 import { useCallback, useEffect } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import { useWorkspaceStore } from '../stores/workspaceStore';
 import { useFilesStore } from '../stores/filesStore';
 import { useMessagesStore } from '../stores/messagesStore';
@@ -14,7 +13,7 @@ const APP_EMOJIS: Record<string, string> = {
 };
 
 // App types that support @ mention drill-down
-const MENTIONABLE_APP_TYPES = ['files', 'projects', 'messages', 'tasks'];
+const MENTIONABLE_APP_TYPES = ['files', 'projects', 'messages'];
 
 export function useMentionData(workspaceId: string | null) {
   const workspace = useWorkspaceStore((s) => s.workspaces.find((w) => w.id === workspaceId));
@@ -26,7 +25,6 @@ export function useMentionData(workspaceId: string | null) {
   const cachedDocs = filesApp ? workspaceDocCache[filesApp.id]?.documentsByFolder : null;
   const documentsByFolder = Object.keys(activeDocsByFolder).length > 0 ? activeDocsByFolder : (cachedDocs || {});
   const channels = useMessagesStore((s) => s.channels);
-  const queryClient = useQueryClient();
   const { data: members } = useProjectMembers(workspaceId);
 
   // Reactively subscribe to project boards so they're fetched if not cached
@@ -124,7 +122,7 @@ export function useMentionData(workspaceId: string | null) {
           return null;
       }
     },
-    [documentsByFolder, channels, boards, queryClient],
+    [documentsByFolder, channels, boards],
   );
 
   const getDrillDownForFolder = useCallback(

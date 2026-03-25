@@ -12,6 +12,30 @@ interface EventDetailModalProps {
   onDeleted: () => void;
 }
 
+function getSafeHref(link: string): string | null {
+  try {
+    const url = new URL(link, window.location.origin);
+    if (url.protocol === 'http:' || url.protocol === 'https:') {
+      return url.href;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function isGoogleMeetLink(meetingLink?: string | null): boolean {
+  if (!meetingLink) {
+    return false;
+  }
+  try {
+    const url = new URL(meetingLink);
+    return url.hostname === 'meet.google.com';
+  } catch {
+    return false;
+  }
+}
+
 export default function EventDetailModal({
   event,
   onClose,
@@ -291,16 +315,20 @@ export default function EventDetailModal({
                 </div>
               )}
 
-              {event.meeting_link && (
+              {event.meeting_link && getSafeHref(event.meeting_link) && (
                 <div className="flex items-start gap-3">
-                  <HugeiconsIcon icon={Video01Icon} size={20} className="text-gray-400 mt-0.5 flex-shrink-0" />
+                  <HugeiconsIcon
+                    icon={Video01Icon}
+                    size={20}
+                    className={`mt-0.5 shrink-0 ${isGoogleMeetLink(event.meeting_link) ? 'text-blue-600' : 'text-gray-400'}`}
+                  />
                   <a
-                    href={event.meeting_link}
+                    href={getSafeHref(event.meeting_link)!}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
+                    className={`text-sm hover:underline ${isGoogleMeetLink(event.meeting_link) ? 'text-blue-600 font-medium hover:text-blue-700' : 'text-blue-600 hover:text-blue-700'}`}
                   >
-                    Join Meeting
+                    {isGoogleMeetLink(event.meeting_link) ? 'Join with Google Meet' : 'Join Meeting'}
                   </a>
                 </div>
               )}
