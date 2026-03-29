@@ -88,7 +88,7 @@
     {
       "id": "step-3-routers-services",
       "title": "Backend Architecture: Routers & Services",
-      "description": "The backend follows a **Router, Service, Library** pattern. Routers handle HTTP concerns like validation, status codes, and auth. Services contain business logic organized by domain — email, calendar, chat, files, documents, projects, and more. Each domain is a self-contained package with focused modules.",
+      "description": "The backend follows a Router, Service, Library pattern. Routers handle HTTP concerns like validation, status codes, and auth. Services contain business logic organized by domain — email, calendar, chat, files, documents, projects, and more. Each domain is a self-contained package with focused modules.",
       "estimatedTime": 45,
       "focusDirectory": "core-api/api",
       "colorMode": "fileTypes",
@@ -125,7 +125,7 @@
     {
       "id": "step-4-ai-chat",
       "title": "AI Chat System",
-      "description": "The AI chat system is one of Core's key features. It uses a **tool-calling agent** architecture with 12+ tools — email search, calendar operations, web search, semantic search, and more. Messages stream in real time with interleaved text and tool results.",
+      "description": "The AI chat system is one of Core's key features. It uses a tool-calling agent architecture with 12+ tools — email search, calendar operations, web search, semantic search, and more. Messages stream in real time with interleaved text and tool results.",
       "estimatedTime": 40,
       "focusDirectory": "core-api/api/services",
       "colorMode": "fileTypes",
@@ -162,7 +162,7 @@
     {
       "id": "step-5-database",
       "title": "Database: Supabase Migrations",
-      "description": "Core uses **Supabase** (PostgreSQL) with Row-Level Security for multi-tenant isolation. The 24 sequential migrations here define the full schema — from users and workspaces through email, calendar, chat, projects, and permissions.",
+      "description": "Core uses Supabase (PostgreSQL) with Row-Level Security for multi-tenant isolation. The 24 sequential migrations here define the full schema — from users and workspaces through email, calendar, chat, projects, and permissions.",
       "estimatedTime": 35,
       "focusDirectory": "core-api/supabase",
       "colorMode": "fileTypes",
@@ -189,7 +189,7 @@
     {
       "id": "step-6-frontend",
       "title": "Frontend: React + TypeScript SPA",
-      "description": "The frontend is a React 19 and TypeScript app built with Vite. It uses **Zustand** for state, **TanStack React Query** for data fetching, **Tailwind CSS** for styling, and **TipTap** for rich text editing. The 24 highlighted feature modules are each self-contained with their own components, hooks, and types.",
+      "description": "The frontend is a React 19 and TypeScript app built with Vite. It uses Zustand for state, TanStack React Query for data fetching, Tailwind CSS for styling, and TipTap for rich text editing. The 24 highlighted feature modules are each self-contained with their own components, hooks, and types.",
       "estimatedTime": 45,
       "focusDirectory": "core-web/src",
       "colorMode": "fileTypes",
@@ -237,7 +237,7 @@
     {
       "id": "step-7-frontend-infra",
       "title": "Frontend Infrastructure: API Client, Hooks & Utilities",
-      "description": "The frontend's supporting infrastructure — the **API client** handles auth and streaming, **custom hooks** manage data fetching, and **shared libraries** provide clients for Supabase, Sentry, PostHog, and common utilities.",
+      "description": "The frontend's supporting infrastructure — the API client handles auth and streaming, custom hooks manage data fetching, and shared libraries provide clients for Supabase, Sentry, PostHog, and common utilities.",
       "estimatedTime": 35,
       "focusDirectory": "core-web/src",
       "colorMode": "fileTypes",
