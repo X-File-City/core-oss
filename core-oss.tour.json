@@ -1,0 +1,429 @@
+{
+  "id": "core-oss-onboarding",
+  "title": "Core OSS Platform Tour",
+  "description": "A guided walkthrough of the Core open-source productivity platform — a monorepo with a FastAPI backend, React frontend, and Cloudflare Worker image proxy.",
+  "version": "1.0.0",
+  "audience": "New Contributors & AI Assistants",
+  "prerequisites": [
+    "Basic understanding of Python and TypeScript",
+    "Familiarity with REST APIs and React"
+  ],
+  "steps": [
+    {
+      "id": "step-1-overview",
+      "title": "Welcome to Core OSS",
+      "description": "Core is an all-in-one productivity platform providing Email, Calendar, AI Chat, Messages, Files, Documents, Projects, and a unified Dashboard. The monorepo is organized into three packages — a Python backend, a React frontend, and a Cloudflare Worker for image handling.",
+      "estimatedTime": 30,
+      "focusDirectory": "",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "packages",
+          "name": "Main Packages",
+          "color": "#3b82f6",
+          "items": [
+            { "path": "core-api", "type": "directory" },
+            { "path": "core-web", "type": "directory" },
+            { "path": "core-image-proxy", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        }
+      ],
+      "interactiveActions": [
+        {
+          "type": "hover-directory",
+          "description": "Hover over each package to see its size and contents",
+          "target": "core-api"
+        }
+      ]
+    },
+    {
+      "id": "step-2-backend-api",
+      "title": "Backend: FastAPI Application",
+      "description": "The backend is built with FastAPI and Python. The highlighted entry point registers all routers, middleware, and error handlers, and deploys as a Vercel serverless function. The API layer contains the HTTP routing and business logic, while the shared libraries hold clients for Supabase, R2, Resend, and AI tools.",
+      "estimatedTime": 45,
+      "focusDirectory": "core-api",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "api-layer",
+          "name": "API Layer (Routers + Services)",
+          "color": "#8b5cf6",
+          "items": [
+            { "path": "core-api/api", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "lib-layer",
+          "name": "Shared Libraries & Clients",
+          "color": "#f59e0b",
+          "items": [
+            { "path": "core-api/lib", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "entry-point",
+          "name": "Entry Point",
+          "color": "#ef4444",
+          "items": [
+            { "path": "core-api/index.py", "type": "file" }
+          ],
+          "opacity": 0.8,
+          "renderStrategy": "fill"
+        }
+      ],
+      "interactiveActions": [
+        {
+          "type": "click-file",
+          "description": "Click index.py to see the main FastAPI app setup",
+          "target": "core-api/index.py"
+        }
+      ]
+    },
+    {
+      "id": "step-3-routers-services",
+      "title": "Backend Architecture: Routers & Services",
+      "description": "The backend follows a **Router, Service, Library** pattern. Routers handle HTTP concerns like validation, status codes, and auth. Services contain business logic organized by domain — email, calendar, chat, files, documents, projects, and more. Each domain is a self-contained package with focused modules.",
+      "estimatedTime": 45,
+      "focusDirectory": "core-api/api",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "routers",
+          "name": "HTTP Routers (26 endpoints)",
+          "color": "#06b6d4",
+          "items": [
+            { "path": "core-api/api/routers", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "services",
+          "name": "Business Logic Services",
+          "color": "#10b981",
+          "items": [
+            { "path": "core-api/api/services", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        }
+      ],
+      "interactiveActions": [
+        {
+          "type": "hover-directory",
+          "description": "Hover over the services directory to see domain-specific packages",
+          "target": "core-api/api/services"
+        }
+      ]
+    },
+    {
+      "id": "step-4-ai-chat",
+      "title": "AI Chat System",
+      "description": "The AI chat system is one of Core's key features. It uses a **tool-calling agent** architecture with 12+ tools — email search, calendar operations, web search, semantic search, and more. Messages stream in real time with interleaved text and tool results.",
+      "estimatedTime": 40,
+      "focusDirectory": "core-api/api/services",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "chat-service",
+          "name": "Chat Agent & Prompts",
+          "color": "#f43f5e",
+          "items": [
+            { "path": "core-api/api/services/chat", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "tools",
+          "name": "AI Tool Definitions & Adapters",
+          "color": "#a855f7",
+          "items": [
+            { "path": "core-api/lib/tools", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        }
+      ],
+      "interactiveActions": [
+        {
+          "type": "hover-directory",
+          "description": "Explore the chat service to see agent and prompt modules",
+          "target": "core-api/api/services/chat"
+        }
+      ]
+    },
+    {
+      "id": "step-5-database",
+      "title": "Database: Supabase Migrations",
+      "description": "Core uses **Supabase** (PostgreSQL) with Row-Level Security for multi-tenant isolation. The 24 sequential migrations here define the full schema — from users and workspaces through email, calendar, chat, projects, and permissions.",
+      "estimatedTime": 35,
+      "focusDirectory": "core-api/supabase",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "migrations",
+          "name": "Database Migrations",
+          "color": "#0ea5e9",
+          "items": [
+            { "path": "core-api/supabase/migrations", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        }
+      ],
+      "interactiveActions": [
+        {
+          "type": "hover-directory",
+          "description": "Hover over migrations to see the full schema evolution",
+          "target": "core-api/supabase/migrations"
+        }
+      ]
+    },
+    {
+      "id": "step-6-frontend",
+      "title": "Frontend: React + TypeScript SPA",
+      "description": "The frontend is a React 19 and TypeScript app built with Vite. It uses **Zustand** for state, **TanStack React Query** for data fetching, **Tailwind CSS** for styling, and **TipTap** for rich text editing. The 24 highlighted feature modules are each self-contained with their own components, hooks, and types.",
+      "estimatedTime": 45,
+      "focusDirectory": "core-web/src",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "components",
+          "name": "Feature Modules (24 domains)",
+          "color": "#3b82f6",
+          "items": [
+            { "path": "core-web/src/components", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "stores",
+          "name": "Zustand State Stores",
+          "color": "#f97316",
+          "items": [
+            { "path": "core-web/src/stores", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "frontend-entry",
+          "name": "App Entry Points",
+          "color": "#ef4444",
+          "items": [
+            { "path": "core-web/src/main.tsx", "type": "file" },
+            { "path": "core-web/src/App.tsx", "type": "file" }
+          ],
+          "opacity": 0.8,
+          "renderStrategy": "fill"
+        }
+      ],
+      "interactiveActions": [
+        {
+          "type": "hover-directory",
+          "description": "Explore the components directory to see all 24 feature modules",
+          "target": "core-web/src/components"
+        }
+      ]
+    },
+    {
+      "id": "step-7-frontend-infra",
+      "title": "Frontend Infrastructure: API Client, Hooks & Utilities",
+      "description": "The frontend's supporting infrastructure — the **API client** handles auth and streaming, **custom hooks** manage data fetching, and **shared libraries** provide clients for Supabase, Sentry, PostHog, and common utilities.",
+      "estimatedTime": 35,
+      "focusDirectory": "core-web/src",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "api-client",
+          "name": "API Client",
+          "color": "#ec4899",
+          "items": [
+            { "path": "core-web/src/api", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "hooks",
+          "name": "Custom Hooks & Queries",
+          "color": "#14b8a6",
+          "items": [
+            { "path": "core-web/src/hooks", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "frontend-lib",
+          "name": "Shared Libs & Utilities",
+          "color": "#f59e0b",
+          "items": [
+            { "path": "core-web/src/lib", "type": "directory" },
+            { "path": "core-web/src/utils", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        }
+      ],
+      "interactiveActions": [
+        {
+          "type": "click-file",
+          "description": "Click on the API client to see how HTTP requests and auth are handled",
+          "target": "core-web/src/api/client.ts"
+        }
+      ]
+    },
+    {
+      "id": "step-8-image-proxy",
+      "title": "Image Proxy: Cloudflare Worker",
+      "description": "A lightweight Cloudflare Worker that serves images from R2 storage with HMAC-signed URLs, on-the-fly resizing, and edge caching. The entire implementation fits in a single file, supporting thumb, chat, preview, and full-size variants.",
+      "estimatedTime": 25,
+      "focusDirectory": "core-image-proxy",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "worker-src",
+          "name": "Worker Source",
+          "color": "#f97316",
+          "items": [
+            { "path": "core-image-proxy/src", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "worker-config",
+          "name": "Worker Configuration",
+          "color": "#6366f1",
+          "items": [
+            { "path": "core-image-proxy/wrangler.toml", "type": "file" }
+          ],
+          "opacity": 0.8,
+          "renderStrategy": "fill"
+        }
+      ],
+      "interactiveActions": [
+        {
+          "type": "click-file",
+          "description": "Click index.ts to see the full Worker implementation",
+          "target": "core-image-proxy/src/index.ts"
+        }
+      ]
+    },
+    {
+      "id": "step-9-testing-ci",
+      "title": "Testing & CI/CD",
+      "description": "The backend has a comprehensive test suite organized by feature — unit, chat, search, documents, and prompts. CI/CD is handled via GitHub Actions, where pull requests automatically trigger lint, type-check, test, and build checks. A separate workflow runs Gitleaks for secret scanning.",
+      "estimatedTime": 30,
+      "focusDirectory": "core-api",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "tests",
+          "name": "Test Suite",
+          "color": "#22c55e",
+          "items": [
+            { "path": "core-api/tests", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "ci",
+          "name": "CI/CD Workflows",
+          "color": "#eab308",
+          "items": [
+            { "path": ".github", "type": "directory" }
+          ],
+          "opacity": 0.7,
+          "renderStrategy": "border"
+        }
+      ],
+      "interactiveActions": [
+        {
+          "type": "hover-directory",
+          "description": "Explore the test directory to see test organization by feature",
+          "target": "core-api/tests"
+        }
+      ]
+    },
+    {
+      "id": "step-10-full-picture",
+      "title": "The Full Picture",
+      "description": "You've now seen the complete Core OSS platform — backend, frontend, and image proxy. The architecture follows clean separation of HTTP layer, business logic, and shared libraries, making it straightforward to navigate and contribute to.",
+      "estimatedTime": 20,
+      "focusDirectory": "",
+      "colorMode": "fileTypes",
+      "highlightLayers": [
+        {
+          "id": "backend",
+          "name": "Backend (FastAPI)",
+          "color": "#8b5cf6",
+          "items": [
+            { "path": "core-api", "type": "directory" }
+          ],
+          "opacity": 0.5,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "frontend",
+          "name": "Frontend (React)",
+          "color": "#3b82f6",
+          "items": [
+            { "path": "core-web", "type": "directory" }
+          ],
+          "opacity": 0.5,
+          "renderStrategy": "border"
+        },
+        {
+          "id": "proxy",
+          "name": "Image Proxy (Cloudflare)",
+          "color": "#f97316",
+          "items": [
+            { "path": "core-image-proxy", "type": "directory" }
+          ],
+          "opacity": 0.5,
+          "renderStrategy": "border"
+        }
+      ],
+      "interactiveActions": [
+        {
+          "type": "explore",
+          "description": "Freely explore the codebase — click on any building to see its contents"
+        }
+      ],
+      "resources": [
+        {
+          "title": "Contributing Guide",
+          "url": "CONTRIBUTING.md",
+          "type": "documentation"
+        },
+        {
+          "title": "Backend README",
+          "url": "core-api/README.md",
+          "type": "documentation"
+        },
+        {
+          "title": "Frontend README",
+          "url": "core-web/README.md",
+          "type": "documentation"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "author": "Claude",
+    "createdAt": "2026-03-29",
+    "updatedAt": "2026-03-29",
+    "tags": ["onboarding", "architecture", "monorepo", "full-stack"]
+  }
+}
